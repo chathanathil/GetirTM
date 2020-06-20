@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "592145049178",
+    "firebase_url": "https://getirtm-50937.firebaseio.com",
+    "project_id": "getirtm-50937",
+    "storage_bucket": "getirtm-50937.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:592145049178:android:3c848f4e92cb6f4b52da63",
+        "android_client_info": {
+          "package_name": "com.example.getirtm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "592145049178-rsila4idu6jrcbm7ds96rgv9ugf9ibis.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_XKcInc3_Z_-R3VUCDIdgHSKiGYfy30A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "592145049178-rsila4idu6jrcbm7ds96rgv9ugf9ibis.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
