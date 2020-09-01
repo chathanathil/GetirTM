@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
 import './provider.dart';
-import '../models/user.dart';
 import '../models/address.dart';
 import '../models//discount_card.dart';
-import '../helpers/shared_preferences_helper.dart';
 
 class UserProvider with ChangeNotifier {
   // remove static from fns and use provider in appropriate pages
@@ -35,54 +32,9 @@ class UserProvider with ChangeNotifier {
     return Address.fromJson(extractData);
   }
 
-  /// Add new address
-  static Future<Address> addAddress(Map body) async {
-    // var response = await http.post('/user/addresses', body: body);
-    // var extractData = json.decode(response.body);
-
-    // return Address.fromJson(extractData);
-  }
-
-  /// Update address
-  static Future<Address> updateAddress(Map body) async {
-    // var response = await http.post(
-    //   "/user/addresses/${body['id']}",
-    //   body: body,
-    // );
-    // var extractData = json.decode(response.body);
-
-    // return Address.fromJson(extractData);
-  }
-
-  /// Make given address default
-  static Future<String> defaultAddress(int id) async {
-    // var response = await http.post("/user/addresses/$id/default");
-    // var extractData = json.decode(response.body);
-
-    // return extractData;
-  }
-
-  /// Delete address
-  static Future<String> deleteAddress(int id) async {
-    // var response = await http.delete("/user/addresses/$id");
-    // var extractData = json.decode(response.body);
-
-    // return extractData;
-  }
   DiscountCardPoint _discountCard;
   DiscountCardPoint get discountCard {
     return _discountCard;
-  }
-
-  /// Fetch discount card and points
-  Future<DiscountCardPoint> fetchAllDiscountCards() async {
-    print('call api');
-    // var response = await RootProvider.http.get('/user/card');
-    // var dCard = DiscountCardPoint.fromJson(response.data);
-    // SharedPreferencesHelper.setUserBalanceAndPercentage(
-    //     dCard.discountCard.balance, dCard.discountCard.percentage);
-
-    // return dCard;
   }
 
   /// Verify discount card
@@ -96,7 +48,6 @@ class UserProvider with ChangeNotifier {
   /// Get discount card
   Future<dynamic> getDiscountCard(Map data) async {
     var response = await RootProvider.http.post('/user/card/get', data: data);
-
     return response;
   }
 }

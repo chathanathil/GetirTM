@@ -14,10 +14,4 @@ class Faq {
       question: json['title'] as String,
     );
   }
-
-  // @override
-  // List<Object> get props => [id, order, question, answer];
-
-  // @override
-  // String toString() => 'Faq { id: $id }';
 }

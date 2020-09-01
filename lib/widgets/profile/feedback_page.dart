@@ -5,11 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:getirtm/models/feedback.dart';
 import 'package:getirtm/provider/home.dart';
 import 'package:getirtm/utils/utils.dart';
-import 'package:path/path.dart';
-// import 'package:image_cropper/image_cropper.dart';
 
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 
 class FeedbackPage extends StatefulWidget {
   static const routeName = 'feedback';
@@ -22,7 +19,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
   TextEditingController _titleTextController = TextEditingController();
   TextEditingController _contentTextController = TextEditingController();
   final _contentFocus = FocusNode();
-  // String type = "male";
   var _isLoading = false;
   List<FeedBackType> types = [];
   List<Map<String, dynamic>> images = [
@@ -34,6 +30,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
     HomeProvider.fetchFeedbackTypes().then((value) => {
           setState(() {
             types = value;
+            type = value[0].id;
           }),
         });
     super.initState();
@@ -61,9 +58,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   Widget buildGridView(context) {
     return Wrap(
-      // shrinkWrap: true,
-      // crossAxisCount: 3,
-      // childAspectRatio: 1,
       runSpacing: 10,
       spacing: 5,
       alignment: WrapAlignment.spaceEvenly,
@@ -126,8 +120,40 @@ class _FeedbackPageState extends State<FeedbackPage> {
     );
   }
 
-  onSubmit() {
-    print('hii');
+  onSubmit() async {
+    if (_titleTextController.text.trim().length == 0 ||
+        _contentTextController.text.trim().length == 0) {
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+    });
+    List<File> img = [];
+    images.forEach((item) {
+      if (item['type'] == "File") {
+        img.add(item['url']);
+      }
+    });
+
+    try {
+      final res = await HomeProvider.addFeedback(
+          _titleTextController.text, _contentTextController.text, type, img);
+
+      setState(() {
+        _isLoading = false;
+        _titleTextController.text = "";
+        _contentTextController.text = "";
+        images = [
+          {'type': 'String', 'url': 'Add Image'}
+        ];
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      throw e;
+    }
   }
 
   @override
@@ -153,7 +179,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
           padding: EdgeInsets.all(15.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            // mainAxisAlignment: MainAxisAlignment.end,
             children: [
               buildGridView(context),
               SizedBox(
@@ -161,7 +186,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
               ),
               generateTypes(),
               TextField(
-                // focusNode: _nameFocus,
                 controller: _titleTextController,
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
@@ -174,10 +198,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
                   ),
                   filled: true,
                   hintStyle: TextStyle(color: Colors.grey[800]),
-                  // hintText: S.of(context).enter_discount_card_name,
                   hintText: 'Title',
                   fillColor: Colors.white70,
-                  // errorText: errorText('name'),
                 ),
                 style: TextStyle(fontSize: 13),
                 onSubmitted: (String value) {
@@ -203,15 +225,10 @@ class _FeedbackPageState extends State<FeedbackPage> {
                   ),
                   filled: true,
                   hintStyle: TextStyle(color: Colors.grey[800]),
-                  // hintText: S.of(context).enter_discount_card_name,
                   hintText: 'Content',
                   fillColor: Colors.white70,
-                  // errorText: errorText('name'),
                 ),
                 style: TextStyle(fontSize: 13),
-                // onSubmitted: (String value) {
-                //   FocusScope.of(context).requestFocus(_surnameFocus);
-                // },
               ),
               SizedBox(
                 height: 15,
@@ -237,7 +254,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       },
                       fallback: (BuildContext context) {
                         return Text(
-                          // S.of(context).verify,
                           'Submit',
                           textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                           style: TextStyle(
@@ -268,13 +284,10 @@ class UploadImage extends StatelessWidget {
   }) : super(key: key);
 
   void getImageFile(ImageSource source, context) async {
-    print(source);
-
     var image = await ImagePicker.pickImage(source: source);
 
     setImage(image);
     Navigator.pop(context);
-    print(image.uri);
   }
 
   @override

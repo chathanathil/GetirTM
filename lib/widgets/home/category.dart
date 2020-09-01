@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:getirtm/provider/home.dart';
+import 'package:provider/provider.dart';
 
-import '../../provider/provider.dart';
 import '../../utils/dimens.dart';
 import '../../utils/colors.dart';
 import '../../models/category.dart';
 
 class CategoryWidget extends StatelessWidget {
   final Category category;
-  final String locale = RootProvider.locale;
 
   CategoryWidget(this.category, {Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -56,16 +57,20 @@ class CategoryWidget extends StatelessWidget {
             padding: EdgeInsets.all(3.0),
             width: width / 3,
             height: 60,
-            child: Text(
-              category.name != null ? category.name : '',
-              textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
-              maxLines: 2,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.grey,
+            child: Consumer<HomeProvider>(
+              builder: (ctx, hm, child) => Text(
+                category.name[hm.locale] != null
+                    ? category.name[hm.locale]
+                    : '',
+                textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
+                maxLines: 2,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey,
+                ),
+                textAlign: TextAlign.left,
               ),
-              textAlign: TextAlign.left,
             ),
           ),
         ),

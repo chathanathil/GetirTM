@@ -1,5 +1,3 @@
-//TODO:Fav Togling is not working properly
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
@@ -18,14 +16,6 @@ import '../../provider/provider.dart';
 import '../../utils/utils.dart';
 import '../common/sliver_appbar_delegate.dart';
 
-// class ProductDetailsPage extends StatefulWidget {
-
-//   ProductDetailsPage(this.product, {Key key}) : super(key: key);
-
-//   @override
-//   _ProductDetailsPageState createState() => _ProductDetailsPageState();
-// }
-
 class ProductDetailsPage extends StatelessWidget {
   final Product product;
   ProductDetailsPage(this.product, {Key key}) : super(key: key);
@@ -34,8 +24,6 @@ class ProductDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(product.name);
-    print(product.isFavorited);
     return SafeArea(
       child: Scaffold(
         appBar: PreferredSize(
@@ -280,7 +268,9 @@ class ProductDetailsPage extends StatelessWidget {
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
                         Text(
-                          product.name != null ? product.name : '',
+                          product.name[locale] != null
+                              ? product.name[locale]
+                              : '',
                           textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                           maxLines: 2,
                           style: TextStyle(
@@ -303,7 +293,7 @@ class ProductDetailsPage extends StatelessWidget {
   Widget _buildHeaderDivider(double height) {
     return SliverToBoxAdapter(
       child: ConditionalBuilder(
-        condition: product.description.length > 0,
+        condition: product.description != null,
         builder: (BuildContext context) {
           return IgnorePointer(
             ignoring: !product.isPackage,
@@ -321,7 +311,9 @@ class ProductDetailsPage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(13.0),
                       child: AutoSizeText(
-                        product.description != null ? product.description : '',
+                        product.description[locale] != null
+                            ? product.description[locale]
+                            : '',
                         textScaleFactor: Dimens.TEXT_SCALE_FACTOR_BIG,
                         style: TextStyle(
                           fontSize: 16.0,

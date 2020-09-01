@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:getirtm/helpers/db_helper.dart';
 import 'package:getirtm/provider/cart.dart';
 import 'package:getirtm/provider/product.dart';
+import 'package:getirtm/provider/provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../utils/utils.dart';
@@ -21,23 +21,10 @@ class ProductWidget extends StatefulWidget {
 }
 
 class _ProductWidgetState extends State<ProductWidget> {
-  @override
-  // // void initState() {
-  // //   // TODO: implement initState
-  // //   super.initState();
-  // //   DB.instance.isFavorited(widget.product.id).then((value) {
-  // //     if (this.mounted) {
-  // //       setState(() {
-  // //         widget.product.isFavorited = value;
-  // //       });
-  // //     }
-  // //   });
-  // }
+  final String locale = RootProvider.locale;
 
   @override
   Widget build(BuildContext context) {
-    print(widget.product.name);
-    print(widget.product.isFavorited);
     return Container(
       key: Key("${widget.product.id}"),
       color: Colors.white,
@@ -132,7 +119,9 @@ class _ProductWidgetState extends State<ProductWidget> {
           mainAxisSize: MainAxisSize.max,
           children: [
             Text(
-              widget.product.name,
+              widget.product.name[locale] != null
+                  ? widget.product.name[locale]
+                  : "",
               textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
@@ -197,15 +186,9 @@ class _ProductWidgetState extends State<ProductWidget> {
   }
 
   Widget _buildButtons(cartData) {
-    // final cartData = Provider.of<CartProvider>(context);
-    return
-        // Consumer<CartProvider>(
-        //   builder: (_, cartData, child) =>
-        Container(
+    return Container(
       decoration: BoxDecoration(
-        //border: Border.all(color: Colors.blue, width: 2.0),
         color: Colors.white,
-        //border: new Border.all(color: AppColors.MAIN_LIGHT, width: 0.2),
         borderRadius: BorderRadius.all(
           Radius.circular(Dimens.BORDER_RADIUS),
         ),
@@ -270,7 +253,6 @@ class _ProductWidgetState extends State<ProductWidget> {
           ],
         ),
       ),
-      // ),
     );
   }
 }

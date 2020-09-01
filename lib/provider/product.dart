@@ -12,12 +12,14 @@ class ProductProvider with ChangeNotifier {
 
   Stream<List<Slide>> get slideStream {
     final k = _db.collection('sliders').snapshots();
+
     return k.map(
         (event) => event.documents.map((e) => Slide.fromJson(e.data)).toList());
   }
 
   Stream<List<Category>> get categoriesStream {
     final k = _db.collection('categories').orderBy('order').snapshots();
+
     return k.map((event) =>
         event.documents.map((e) => Category.fromJson(e.data)).toList());
   }
@@ -42,14 +44,7 @@ class ProductProvider with ChangeNotifier {
         .where('stock', isGreaterThanOrEqualTo: 1)
         .orderBy('order')
         .snapshots();
-    //  DB.instance.isFavorited(e.data['id']).then((value) {
-    //     // if (this.mounted) {
-    //     // setState(() {
-    //     //   product.isFavorited = value;
-    //     // });
-    //     // }
-    //     fav = value;
-    //   });
+
     return k.map((event) => event.documents
         .map((e) => Product.fromJson(
               e.data,
@@ -69,5 +64,4 @@ class ProductProvider with ChangeNotifier {
   Future getFavourites() async {
     favItems = await DB.instance.getFavorites();
   }
-
 }

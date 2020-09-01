@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-class Checkout extends Equatable {
+class Checkout {
   final String errorCode;
   final String orderId;
   final String formUrl;
@@ -20,10 +18,4 @@ class Checkout extends Equatable {
       formUrl: json['formUrl'] as String ?? '',
     );
   }
-
-  @override
-  List<Object> get props => [errorCode, orderId, formUrl, type];
-
-  @override
-  String toString() => 'Checkout { orderId: $orderId }';
 }

@@ -1,6 +1,19 @@
+import 'dart:io';
 import 'package:getirtm/provider/provider.dart';
 
 final String locale = RootProvider.locale;
+
+class FeedBack {
+  final int id;
+  final String title;
+  final String text;
+  final List<File> images;
+
+  const FeedBack({this.id, this.title, this.text, this.images});
+
+  Map<String, dynamic> toJson() =>
+      {"type_id": id, "title": title, "text": text, "images": images};
+}
 
 class FeedBackType {
   final int id;
@@ -14,10 +27,4 @@ class FeedBackType {
       name: json['name'][locale] != null ? json['name'][locale] as String : '',
     );
   }
-
-  // @override
-  // List<Object> get props => [id, title];
-
-  // @override
-  // String toString() => 'State { id: $id, regions: ${regions.length} }';
 }

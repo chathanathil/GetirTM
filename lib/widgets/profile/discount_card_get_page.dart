@@ -1,14 +1,10 @@
-// TODO: Check for catch error in onSubmit
-
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
 
 import '../../utils/utils.dart';
-// import 'package:flutter_getir/provider/user_provider.dart';
 import '../../widgets/common/common.dart';
-// import "../../provider/user.dart";
 import '../../provider/discount_card.dart';
 
 class DiscountCardGetPage extends StatefulWidget {
@@ -21,19 +17,16 @@ class DiscountCardGetPage extends StatefulWidget {
 class _DiscountCardGetPageState extends State<DiscountCardGetPage> {
   final _nameTextController = TextEditingController();
   final _surnameTextController = TextEditingController();
-  // final _phoneTextController = TextEditingController();
   final _dobTextController = TextEditingController();
   String gender = "male";
 
   bool isLoading = false;
-  // var phoneFormatter = new MaskTextInputFormatter(
-  //     mask: '+993 ## ##-##-##', filter: {"#": RegExp(r'[0-9]')});
+
   var dobFormatter = new MaskTextInputFormatter(
       mask: '####-##-##', filter: {"#": RegExp(r'[0-9]')});
   List formErrors = [];
   final _nameFocus = FocusNode();
   final _surnameFocus = FocusNode();
-  // final _phoneFocus = FocusNode();
   final _dobFocus = FocusNode();
 
   @override
@@ -45,11 +38,9 @@ class _DiscountCardGetPageState extends State<DiscountCardGetPage> {
   void dispose() {
     _nameTextController.dispose();
     _surnameTextController.dispose();
-    // _phoneTextController.dispose();
     _dobTextController.dispose();
     _nameFocus.dispose();
     _surnameFocus.dispose();
-    // _phoneFocus.dispose();
     _dobFocus.dispose();
     super.dispose();
   }
@@ -114,7 +105,7 @@ class _DiscountCardGetPageState extends State<DiscountCardGetPage> {
 
   errorText(field) {
     return formErrors.indexOf(field) != -1
-        ? (field == 'birthday') //field == 'dob' || field == 'phone'
+        ? (field == 'birthday')
             ? S.of(context).invalid_field
             : S.of(context).createAddressPage_required
         : null;
@@ -122,17 +113,7 @@ class _DiscountCardGetPageState extends State<DiscountCardGetPage> {
 
   @override
   Widget build(BuildContext context) {
-    return
-        // Scaffold(
-        //   appBar: AppBar(
-        //     title: Text(
-        //       S.of(context).discount_card,
-        //       textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
-        //       style: TextStyle(fontWeight: FontWeight.w600),
-        //     ),
-        //   ),
-        //   body:
-        GestureDetector(
+    return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(new FocusNode());
       },
@@ -207,35 +188,6 @@ class _DiscountCardGetPageState extends State<DiscountCardGetPage> {
           SizedBox(
             height: 9,
           ),
-          // TextField(
-          //   focusNode: _phoneFocus,
-          //   controller: _phoneTextController,
-          //   maxLength: 16,
-          //   keyboardType: TextInputType.number,
-          //   textInputAction: TextInputAction.next,
-          //   decoration: InputDecoration(
-          //     counterText: '',
-          //     contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-          //     border: OutlineInputBorder(
-          //       borderRadius: const BorderRadius.all(
-          //         const Radius.circular(30.0),
-          //       ),
-          //     ),
-          //     filled: true,
-          //     hintStyle: TextStyle(color: Colors.grey[800]),
-          //     hintText: S.of(context).enter_discount_card_phone,
-          //     fillColor: Colors.white70,
-          //     errorText: errorText('phone'),
-          //   ),
-          //   style: TextStyle(fontSize: 13),
-          //   inputFormatters: [phoneFormatter],
-          //   onSubmitted: (String value) {
-          //     FocusScope.of(context).requestFocus(_dobFocus);
-          //   },
-          // ),
-          // SizedBox(
-          //   height: 9,
-          // ),
           TextField(
             focusNode: _dobFocus,
             controller: _dobTextController,
@@ -332,7 +284,6 @@ class _DiscountCardGetPageState extends State<DiscountCardGetPage> {
           ),
         ],
       ),
-      // ),
     );
   }
 }

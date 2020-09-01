@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart'
     show CupertinoTextField, OverlayVisibilityMode;
+import 'package:getirtm/widgets/product/product_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/search.dart';
-import '../models/product.dart';
 import '../models/popular_search.dart';
 import '../utils/utils.dart';
 import '../utils/link_container.dart';
@@ -58,8 +58,7 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       searchTerm = keyWord;
     });
-    print('ssss');
-    print(searchTerm.length);
+
     final _provider = Provider.of<SearchProvider>(context, listen: false);
     if (keyWord.length < 2) {
       return _provider.setEmpty();
@@ -154,7 +153,10 @@ class _SearchPageState extends State<SearchPage> {
                         itemBuilder: (context, index) {
                           return createModalLinkContainer(
                             context,
-                            ItemWidget(item: search.products[index]),
+                            ProductWidget(
+                              search.products[index],
+                              search: 1,
+                            ),
                             () => ProductDetailsPage(search.products[index]),
                           );
                         },
@@ -191,14 +193,11 @@ class _SearchPageState extends State<SearchPage> {
         controller: _textController,
         clearButtonMode: OverlayVisibilityMode.never,
         onSubmitted: (text) {
-          if (text.isEmpty) {
+          if (text != null && text.isEmpty) {
             _search('');
           }
         },
         onChanged: (text) {
-          // _searchBloc.add(
-          //   TextChanged(text: text),
-          // );
           _search(text);
         },
       ),
@@ -208,68 +207,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void dispose() {
     _textController.dispose();
-    // _searchBloc.close();
     super.dispose();
-  }
-}
-
-class ItemWidget extends StatelessWidget {
-  final Product item;
-
-  const ItemWidget({Key key, @required this.item}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(Dimens.BORDER_RADIUS),
-              child: Image.network(
-                item.image,
-                fit: BoxFit.cover,
-              ),
-            ),
-            decoration: BoxDecoration(
-              //border: Border.all(color: Colors.blue, width: 2.0),
-              color: Colors.white,
-              borderRadius: BorderRadius.all(
-                Radius.circular(Dimens.BORDER_RADIUS),
-              ),
-              boxShadow: <BoxShadow>[
-                new BoxShadow(
-                  color: AppColors.CATEGORY_SHADOW,
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            margin: EdgeInsets.all(5.0),
-            height: width / 3,
-            width: width / 3,
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.all(3.0),
-          width: width / 3,
-          height: 40,
-          child: Text(
-            item.name,
-            maxLines: 2,
-            textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: Colors.grey,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ],
-    );
   }
 }
 
@@ -281,7 +219,7 @@ class HotSugWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (hotWords.isEmpty) {
+    if (hotWords == null || hotWords.isEmpty) {
       return Container();
     }
     return Column(
@@ -316,7 +254,6 @@ class HotSugWidget extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5),
                       border: new Border.all(color: AppColors.GRAY_LIGHT),
                     ),
-                    //padding: EdgeInsets.symmetric(vertical: 5, horizontal: 7),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
@@ -336,9 +273,3 @@ class HotSugWidget extends StatelessWidget {
     );
   }
 }
-// class SearchScreen extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container();
-//   }
-// }

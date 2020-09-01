@@ -11,33 +11,25 @@ class DiscountCardProvider with ChangeNotifier {
   final Firestore _db = Firestore.instance;
 
   DiscountCard _discountCard;
-  List<Order> _orderHistory;
+  List<Order> _discountCardHistory;
   DiscountCard get discountCard {
     return _discountCard;
   }
 
   List<Order> get orderHistory {
-    return _orderHistory;
+    return _discountCardHistory;
   }
 
   Future createDiscountCard(Map data) async {
     try {
-      print('data');
-      print(data);
       var response = await RootProvider.http.post('/card', data: data);
-
-      print(response);
     } on DioError catch (error) {
-      print('on dio');
-      print(error.response);
       throw error.response;
     }
   }
 
   Future fetchDiscountCards() async {
     User user = await SharedPreferencesHelper.getUserDetails();
-    print('tssssssssss');
-
     final snapshot = _db.collection('users').document(user.id.toString());
     final discountCard = await snapshot.get();
     _discountCard = DiscountCard.fromJson(discountCard.data['discount_card']);
@@ -46,12 +38,10 @@ class DiscountCardProvider with ChangeNotifier {
     final List<Order> loadedOrders = [];
 
     history.documents.map((item) {
-      print('descrip');
-      print(item['description']);
       loadedOrders.add(Order.fromJson(item.data));
     }).toList();
 
-    _orderHistory = loadedOrders;
+    _discountCardHistory = loadedOrders;
     notifyListeners();
   }
 }

@@ -51,8 +51,6 @@ class _ProductsPageState extends State<ProductsPage>
 
   @override
   Widget build(BuildContext context) {
-    print('idddd');
-    print(widget.categories[0].id);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -76,13 +74,10 @@ class _ProductsPageState extends State<ProductsPage>
                           isScrollable: true,
                           indicatorColor: AppColors.TAB_LINE_YELLOW,
                           indicatorWeight: 3,
-                          tabs: widget.categories.map((category) =>
-                              //  category.name == null
-                              // ? setState(() {
-                              //     showTab = false;
-                              //   })
-                              // :
-                              new Tab(text: category.name)).toList(),
+                          tabs: widget.categories
+                              .map((category) =>
+                                  new Tab(text: category.name[locale]))
+                              .toList(),
                         )),
                   )
                 : Container(),
@@ -99,12 +94,8 @@ class _ProductsPageState extends State<ProductsPage>
                                   child: LoadingPage(),
                                 );
                               }
-                              // if (!snapshot.hasData) {
-                              //   return EmptyPage();
-                              // }
 
                               return StreamProvider<List<Product>>.value(
-                                // catchError: (_, err) => null,
                                 value: stream.productsStream(category.id),
                                 child: SectionWidget(
                                   subCategories: snapshot.data,

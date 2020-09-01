@@ -13,12 +13,6 @@ class CartItem {
       return quantity;
     }
 
-    // TODO: check stock
-    // if (products[index].total <= quantity) {
-    //   products[index].quantity = products[index].total;
-    //   return;
-    // }
-
     products[index] =
         products[index].copyWith(quantity: products[index].quantity + quantity);
 

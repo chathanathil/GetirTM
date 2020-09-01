@@ -1,5 +1,4 @@
 import 'dart:async';
-// import '../models/category.dart';
 import 'package:path/path.dart';
 import 'dart:io' show Directory;
 import 'package:sqflite/sqflite.dart';
@@ -24,7 +23,6 @@ class DB {
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "database.db");
-    print(path);
 
     return await openDatabase(
       path,
@@ -33,8 +31,6 @@ class DB {
         print('opening db');
       },
       onCreate: _onCreate,
-      // onUpgrade: _onUpgradeAndDowngrade,
-      // onDowngrade: _onUpgradeAndDowngrade,
     );
   }
 
@@ -45,13 +41,6 @@ class DB {
     await _createTableFavorites(db);
   }
 
-  // _onUpgradeAndDowngrade(Database db, int oldVersion, int newVersion) async {
-  //   print('upgrading-downgrading db old: $oldVersion, new: $newVersion');
-  //   await SharedPreferencesHelper.removeLastSync();
-  //   await _createTableProducts(db);
-  //   await _createTableCategories(db);
-  // }
-
   /// Create products table
   Future<void> _createTableProducts(Database db) async {
     await db.execute('DROP TABLE IF EXISTS products;');
@@ -59,10 +48,12 @@ class DB {
       CREATE TABLE products (
         id INTEGER PRIMARY KEY,
         category_id INTEGER,
-        subcategory_id INTEGER,
-        name TEXT,
+        subcategory_id INTEGER, 
+        name_ru TEXT,
+        name_tm TEXT,
         image TEXT,
-        description TEXT,
+        description_ru TEXT,
+        description_tm TEXT,
         price REAL,
         discount_price REAL,
         discount_percentage REAL,
@@ -100,7 +91,6 @@ class DB {
 
   // PRODUCTS
   createProduct(Product product) async {
-    print(product.toJson());
     final db = await database;
     var batch = db.batch();
     var _products = await db.rawQuery(
@@ -111,7 +101,7 @@ class DB {
       return;
     }
     batch.execute(
-      'INSERT OR REPLACE INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT OR REPLACE INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       product.toJson().values.toList(),
     );
     await batch.commit(noResult: true, continueOnError: false);
@@ -174,12 +164,7 @@ class DB {
       SELECT * FROM products
       JOIN favorites ON favorites.product_id=products.id
     ''');
-    // print(_products);
     return List.from(_products).map((product) {
-      print(product['title']);
-      print(product);
-      print(product['image']);
-      print(product['price']);
       Product _product = Product.fromSql(product);
       _product.isFavorited = true;
 
@@ -198,7 +183,6 @@ class DB {
       FROM cart
       JOIN products ON products.id=cart.product_id
     ''');
-    print(_products);
     return List.from(_products)
         .map((product) => Product.fromSql(product))
         .toList();
@@ -229,7 +213,6 @@ class DB {
   }
 
   removeProduct(Product product, {num quantity = 1}) async {
-    print('in db');
     final db = await database;
     var _products = await db.rawQuery(
       'SELECT * FROM cart WHERE product_id=?',
@@ -244,8 +227,7 @@ class DB {
         'UPDATE cart SET quantity=? WHERE product_id=?',
         [quantity, product.id],
       );
-      print('db');
-      // print(quantity);
+
       return quantity;
     } else {
       // Delete products from product table if the product is not favorited
@@ -264,36 +246,8 @@ class DB {
     }
   }
 
-  // getQuantity(Product product) async {
-  //   final db = await database;
-  //   var products = await db.rawQuery(
-  //     'SELECT * FROM cart WHERE product_id=?',
-  //     [product.id],
-  //   );
-  //   if (products.isEmpty) {
-  //     return 0;
-  //   }
-  //   print('£££££££££££££');
-  //   print(products.first['quantity']);
-  //   return products.first['quantity'];
-  // }
-
   clearKart() async {
     final db = await database;
     await db.execute('DELETE FROM cart; VACUUM;');
   }
-
-  // repeatOrder(Order order) async {
-  //   final db = await database;
-  //   await db.execute('DELETE FROM cart; VACUUM');
-
-  //   var batch = db.batch();
-  //   order.products.forEach((product) {
-  //     batch.insert('cart', {
-  //       'product_id': product.id,
-  //       'quantity': product.quantity
-  //     });
-  //   });
-  //   await batch.commit(noResult: true, continueOnError: true);
-  // }
 }

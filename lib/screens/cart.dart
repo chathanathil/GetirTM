@@ -1,7 +1,4 @@
-// TODO:Subtottal check in text widget in this page
-
 import 'package:flutter/material.dart';
-import 'package:getirtm/helpers/db_helper.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/auth.dart';
@@ -26,7 +23,6 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Provider.of<AuthProvider>(context, listen: false).hasToken();
   }
@@ -74,7 +70,7 @@ class _CartScreenState extends State<CartScreen> {
                     bottom: 0.0,
                     left: 0.0,
                     right: 0.0,
-                    child: _buildButton(),
+                    child: _buildButton(cartData),
                   );
                 },
               ),
@@ -113,9 +109,10 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _buildButton() {
+  Widget _buildButton(cartData) {
     return Consumer<AuthProvider>(
       builder: (context, auth, child) {
+        // Change here
         if (!auth.isAuthenticated) {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
@@ -212,11 +209,11 @@ class _CartScreenState extends State<CartScreen> {
                             height: 45,
                             child: Center(
                               child: Text(
-                                'total',
-                                // getCurrency(
-                                //   bloc.kart.subtotalCost,
-                                //   S.of(context).symbol,
-                                // ),
+                                // 'total',
+                                getCurrency(
+                                  cartData.subtotalCost,
+                                  S.of(context).symbol,
+                                ),
                                 textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                                 style: TextStyle(
                                   color: AppColors.MAIN,

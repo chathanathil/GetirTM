@@ -53,21 +53,6 @@ class DiscountCard {
         point: json["point"] as num ?? 0.0,
         background: json["background"] as String,
       );
-
-  // Map<String, dynamic> toJson() => {
-  //       "id": id,
-  //       "code": code,
-  //       "percentage": percentage,
-  //       "balance": balance,
-  //       "background": background,
-  //     };
-
-  // @override
-  // List<Object> get props => [id, code, percentage, balance];
-
-  // @override
-  // String toString() =>
-  //     'DiscountCard { id: $id, code: $code, percentage: $percentage, balance: $balance }';
 }
 
 class Point extends Equatable {

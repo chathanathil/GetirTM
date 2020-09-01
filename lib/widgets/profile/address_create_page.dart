@@ -31,7 +31,7 @@ class AddressCreatePage extends StatefulWidget {
 class _AddressCreatePageState extends State<AddressCreatePage> {
   bool get isEditing => widget.isEditing;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   TextEditingController _textController = TextEditingController();
 
   List<Model.City> _cities = [];
@@ -72,27 +72,27 @@ class _AddressCreatePageState extends State<AddressCreatePage> {
       setState(() {
         _loadCities = false;
       });
-    }
 
-    setState(() {
-      _loadTypes = true;
-    });
-    _addressTypes = await _provider.fetchAddressTypes();
-    if (isEditing) {
-      _addressTypes.replaceRange(
-          _addressTypes
-              .indexWhere((element) => element.id == widget.item.type.id),
-          _addressTypes
-                  .indexWhere((element) => element.id == widget.item.type.id) +
-              1,
-          [widget.item.type]);
-      _selectedType = widget.item.type;
-    } else {
-      _selectedType = _addressTypes[0];
+      setState(() {
+        _loadTypes = true;
+      });
+      _addressTypes = await _provider.fetchAddressTypes();
+      if (isEditing) {
+        _addressTypes.replaceRange(
+            _addressTypes
+                .indexWhere((element) => element.id == widget.item.type.id),
+            _addressTypes.indexWhere(
+                    (element) => element.id == widget.item.type.id) +
+                1,
+            [widget.item.type]);
+        _selectedType = widget.item.type;
+      } else {
+        _selectedType = _addressTypes[0];
+      }
+      setState(() {
+        _loadTypes = false;
+      });
     }
-    setState(() {
-      _loadTypes = false;
-    });
 
     _isInit = false;
   }
@@ -242,6 +242,9 @@ class _AddressCreatePageState extends State<AddressCreatePage> {
               borderRadius: new BorderRadius.circular(Dimens.BORDER_RADIUS / 2),
             ),
             onPressed: () async {
+              final _addProvider =
+                  Provider.of<AddressProvider>(context, listen: false);
+
               if (_selectedCity == null) {
                 setState(() {
                   _validate = FormValidation.cityInValid;
@@ -270,12 +273,14 @@ class _AddressCreatePageState extends State<AddressCreatePage> {
                     setState(() {
                       _addLoading = true;
                     });
+
                     try {
-                      await Provider.of<AddressProvider>(context, listen: false)
-                          .updateAddress(body);
+                      await _addProvider.updateAddress(body);
                       Scaffold.of(context).showSnackBar(SnackBar(
                         content: Text(
-                          S.of(context).addressPage_updated,
+                          _addProvider.addressMsg.length != 0
+                              ? _addProvider.addressMsg
+                              : S.of(context).addressPage_updated,
                           textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                         ),
                         duration: Duration(seconds: 3),
@@ -309,15 +314,17 @@ class _AddressCreatePageState extends State<AddressCreatePage> {
                       _addLoading = true;
                     });
                     try {
-                      await Provider.of<AddressProvider>(context, listen: false)
-                          .addAddress(body);
+                      await _addProvider.addAddress(body);
                       Scaffold.of(context).showSnackBar(SnackBar(
                         content: Text(
-                          S.of(context).addressPage_added,
+                          _addProvider.addressMsg.length != 0
+                              ? _addProvider.addressMsg
+                              : S.of(context).addressPage_updated,
                           textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                         ),
                         duration: Duration(seconds: 3),
                       ));
+
                       Navigator.of(context).pop();
                       setState(() {
                         _addLoading = false;
@@ -328,8 +335,10 @@ class _AddressCreatePageState extends State<AddressCreatePage> {
                         _addLoading = false;
                       });
                     } catch (err) {
-                      showMessageDialog(
-                          context, 'Error occured try again later');
+                      setState(() {
+                        _addLoading = false;
+                      });
+                      Navigator.of(context).pop();
                     }
                   }
                 }
@@ -363,6 +372,7 @@ class _AddressCreatePageState extends State<AddressCreatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(
           widget.isEditing

@@ -14,7 +14,6 @@ import './provider/provider.dart';
 import './provider/auth.dart';
 import './provider/user.dart';
 import "./provider/order.dart";
-import './models/product.dart';
 import './provider/product.dart';
 
 import './generated/i18n.dart';
@@ -39,9 +38,8 @@ class Root extends StatefulWidget {
   static void setLocale(BuildContext context, Locale locale) async {
     _RootState state = context.findAncestorStateOfType<State<Root>>();
 
-    await HomeProvider.setLocale(locale.languageCode);
+    await HomeProvider.setLocales(locale.languageCode);
     await RootProvider.setRequestHeaders();
-    // BlocProvider.of<CategoryBloc>(context).add(FetchCategories(resync: true));
 
     state.setState(() {
       state._locale = locale;
@@ -50,32 +48,30 @@ class Root extends StatefulWidget {
 }
 
 class _RootState extends State<Root> {
-  static const routeName = "root";
-
   final GlobalKey<NavigatorState> homeNavKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> profileNavKey = GlobalKey<NavigatorState>();
   List<GlobalKey<NavigatorState>> _navigatorKeys;
   List<Widget> _screens;
-  // KartBloc kartBloc;
   int currentIndex = 0;
   Locale _locale;
-
   @override
   void initState() {
     super.initState();
 
     HomeProvider.getLocale().then((locale) async {
       if (locale == null) {
-        await HomeProvider.setLocale('ru');
+        await HomeProvider.setLocales('ru');
+        await RootProvider.init();
+
         return;
       }
 
       setState(() {
         _locale = Locale(locale, '');
       });
+      await RootProvider.init();
     });
 
-    // kartBloc = KartBloc();
     _navigatorKeys = [homeNavKey, profileNavKey];
     _screens = [
       HomeScreen(navigatorKey: homeNavKey),
@@ -88,7 +84,6 @@ class _RootState extends State<Root> {
 
   @override
   void dispose() {
-    // kartBloc.close();
     super.dispose();
   }
 
@@ -109,19 +104,13 @@ class _RootState extends State<Root> {
         ),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         StreamProvider.value(
-          initialData: [Category(id: 0, image: '', name: '')],
+          initialData: [Category(id: 0, image: '', name: {})],
           value: ProductProvider().categoriesStream,
-          // catchError: (_, err) => 'error',
         ),
         StreamProvider(
           create: (_) => ProductProvider().slideStream,
           initialData: [Slide(id: 0, image: '', title: '')],
         ),
-        // StreamProvider.value(value: ProductProvider().subCategoriesStream),
-        // StreamProvider.value(
-        //   value: ProductProvider().productsStream,
-        //   // catchError: (context, err) => null,
-        // ),
         ChangeNotifierProvider(
           create: (_) => CartProvider(),
         )
@@ -173,11 +162,9 @@ class _RootState extends State<Root> {
                     BottomBarItem(icon: Icons.person),
                   ],
                   onMainPressed: () {
-                    // kartBloc.add(LoadKart());
                     setState(() {
                       currentIndex = 4;
                     });
-                    print("mainPressed");
                   },
                   onPressed: (index) {
                     if (currentIndex == index) {

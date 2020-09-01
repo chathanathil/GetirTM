@@ -1,8 +1,8 @@
-//TODO:find the turkmen and rus of name and change the label text in name field alse for error message
 import 'dart:async';
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:getirtm/provider/provider.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
 
@@ -68,6 +68,8 @@ class _VerifyFormState extends State<VerifyForm> {
 
   _onSendCodeButtonPressed() async {
     String phone = "+993${maskFormatter.getUnmaskedText()}";
+    String realPhone = "${maskFormatter.getUnmaskedText()}";
+
     if (phone.length < 12) {
       setState(() {
         _validate = FormValidation.phoneInvalid;
@@ -85,7 +87,7 @@ class _VerifyFormState extends State<VerifyForm> {
     });
     try {
       await Provider.of<AuthProvider>(context, listen: false)
-          .login(phone: phone, name: "Maksat");
+          .login(phone: realPhone, name: _nameController.text);
 
       setState(() {
         _validate = FormValidation.valid;
@@ -107,6 +109,7 @@ class _VerifyFormState extends State<VerifyForm> {
 
   _onVerifyButtonPressed() async {
     String phone = "+993${maskFormatter.getUnmaskedText()}";
+    String realPhone = "${maskFormatter.getUnmaskedText()}";
     String code = _codeController.text.trim();
 
     if (code.length != 6) {
@@ -117,13 +120,25 @@ class _VerifyFormState extends State<VerifyForm> {
     }
 
     try {
+      setState(() {
+        _verifyLoading = true;
+      });
       await Provider.of<AuthProvider>(context, listen: false)
-          .verify(phone: phone, otp: code);
+          .verify(phone: realPhone, otp: code);
       Navigator.of(context).pop();
+      setState(() {
+        _verifyLoading = false;
+      });
     } on HttpException catch (error) {
+      setState(() {
+        _verifyLoading = false;
+      });
       _showErrorMessage(error.toString());
     } catch (err) {
-      throw err;
+      setState(() {
+        _verifyLoading = false;
+      });
+      _showErrorMessage("Something went wrong");
     }
   }
 
@@ -132,7 +147,7 @@ class _VerifyFormState extends State<VerifyForm> {
     return Form(
       child: Padding(
         padding: const EdgeInsets.only(
-          top: 20.0,
+          // top: 10.0,
           left: 20.0,
           right: 20.0,
         ),
@@ -140,6 +155,9 @@ class _VerifyFormState extends State<VerifyForm> {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
+              SizedBox(
+                height: 20,
+              ),
               Theme(
                 data: new ThemeData(
                   //this changes the colour
@@ -213,7 +231,8 @@ class _VerifyFormState extends State<VerifyForm> {
                       ),
                     ),
                     errorText: (_validate == FormValidation.nameInvalid)
-                        ? S.of(context).verifyPage_phoneInvalid
+                        ? AuthProvider.appContent.name['required']
+                            [RootProvider.locale]
                         : null,
                     enabledBorder: const OutlineInputBorder(
                       borderSide: const BorderSide(
@@ -227,7 +246,8 @@ class _VerifyFormState extends State<VerifyForm> {
                         width: 1,
                       ),
                     ),
-                    labelText: S.of(context).verifyPage_phoneField,
+                    labelText:
+                        AuthProvider.appContent.name[RootProvider.locale],
                     hintStyle: TextStyle(color: AppColors.MAIN_LIGHT),
                   ),
                 ),
@@ -239,7 +259,6 @@ class _VerifyFormState extends State<VerifyForm> {
                 visible: _codeSent,
                 child: Theme(
                   data: new ThemeData(
-                    //this changes the colour
                     hintColor: Colors.grey,
                     inputDecorationTheme: new InputDecorationTheme(
                       labelStyle: new TextStyle(color: AppColors.MAIN),

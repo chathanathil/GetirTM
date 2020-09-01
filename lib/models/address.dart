@@ -4,23 +4,17 @@ final String locale = RootProvider.locale;
 
 class Address {
   int id;
-  //  String title;
   String address;
   AddressType type;
   City city;
-  // final State state;
-  // final Region region;
   bool isDefault;
 
   Address({
     this.id,
     this.isDefault,
-    // this.title,
     this.type,
     this.city,
     this.address,
-    // this.state,
-    // this.region,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) {
@@ -33,19 +27,6 @@ class Address {
           json.containsKey('type') ? AddressType.fromJson(json['type']) : null,
     );
   }
-
-  // Map<String, dynamic> toJson() => {
-  //       "id": id,
-  //       "is_default": isDefault,
-  //       // "title": title,
-  //       "address": address,
-  //     };
-
-  // @override
-  // List<Object> get props => [id, isDefault, title, address, state, region];
-
-  // @override
-  // String toString() => 'Address { id: $id, is_default: $isDefault }';
 }
 
 class AddressType {
@@ -60,12 +41,6 @@ class AddressType {
       name: json['name'][locale] != null ? json['name'][locale] as String : '',
     );
   }
-
-  // @override
-  // List<Object> get props => [id, title];
-
-  // @override
-  // String toString() => 'State { id: $id, regions: ${regions.length} }';
 }
 
 class City {
@@ -81,23 +56,3 @@ class City {
     );
   }
 }
-
-// class Region {
-//   final int id;
-//   final String title;
-
-//   const Region({this.id, this.title});
-
-//   static Region fromJson(dynamic json) {
-//     return Region(
-//       id: json['id'] as int,
-//       title: json['title'] as String,
-//     );
-//   }
-
-//   @override
-//   List<Object> get props => [id, title];
-
-//   @override
-//   String toString() => 'Region { id: $id }';
-// }

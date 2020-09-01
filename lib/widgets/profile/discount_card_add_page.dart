@@ -85,10 +85,7 @@ class _DiscountCardAddPageState extends State<DiscountCardAddPage> {
                           title: S.of(context).error,
                           close: S.of(context).close);
                     } else {
-                      print("Doooooooooooo here");
-                      // widget.bloc.add(
-                      //   DiscountCardVerify(int.parse(_cardTextController.text)),
-                      // );
+                      print("here");
                     }
                     FocusScope.of(context).requestFocus(FocusNode());
                   },

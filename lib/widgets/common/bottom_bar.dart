@@ -27,9 +27,7 @@ class BottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //ignore: close_sinks
-    // final KartBloc kartBloc = BlocProvider.of<KartBloc>(context);
-
+    Provider.of<CartProvider>(context, listen: false).getCart();
     Size size = MediaQuery.of(context).size;
     return Container(
       color: Colors.grey[100],
@@ -115,33 +113,24 @@ class BottomBar extends StatelessWidget {
                         right: 0,
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(20.0),
-                            child:
-                                // BlocBuilder(
-                                //     bloc: kartBloc,
-                                //     builder: (BuildContext context, KartState state) {
-                                //       return (kartBloc.kart.products.length > 0)
-                                //           ?
-                                Consumer<CartProvider>(
-                                    builder: (_, cartData, child) =>
-                                        cartData.cartItems.length > 0
-                                            ? Container(
-                                                height: 25.0,
-                                                width: 25.0,
-                                                color: Colors.red,
-                                                child: Center(
-                                                  child: new Text(
-                                                    "${cartData.cartItems.length}",
-                                                    textScaleFactor: Dimens
-                                                        .TEXT_SCALE_FACTOR,
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                ),
-                                              )
-                                            : Container())
-                            // : Container();
-                            // }),
-                            ),
+                            child: Consumer<CartProvider>(
+                                builder: (_, cartData, child) =>
+                                    cartData.cartItems.length > 0
+                                        ? Container(
+                                            height: 25.0,
+                                            width: 25.0,
+                                            color: Colors.red,
+                                            child: Center(
+                                              child: new Text(
+                                                "${cartData.cartItems.length}",
+                                                textScaleFactor:
+                                                    Dimens.TEXT_SCALE_FACTOR,
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          )
+                                        : Container())),
                       )
                     ]),
                     decoration: BoxDecoration(

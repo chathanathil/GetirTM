@@ -1,20 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:getirtm/provider/discount_card.dart';
-import 'package:getirtm/provider/order.dart';
 import 'package:getirtm/widgets/profile/discount_card_get_page.dart';
 import 'package:provider/provider.dart';
-import '../../provider/user.dart';
 import '../../utils/utils.dart';
-import '../../models/order.dart';
 import '../../widgets/common/common.dart';
-// import '../../provider/order_provider.dart';
-// import '../../bloc/discount_card/discount_card.dart';
-import '../../widgets/profile/discount_card_add_page.dart';
 
 class DiscountCardPage extends StatefulWidget {
   static const routeName = 'discount_card';
@@ -48,10 +41,6 @@ class _DiscountCardPageState extends State<DiscountCardPage> {
       Provider.of<DiscountCardProvider>(context, listen: false)
           .fetchDiscountCards()
           .then((_) {
-        print('printttttt');
-        print(Provider.of<DiscountCardProvider>(context, listen: false)
-            .orderHistory[0]
-            .id);
         setState(() {
           _loadingCards = false;
         });
@@ -81,51 +70,14 @@ class _DiscountCardPageState extends State<DiscountCardPage> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
-      body:
-          //  Consumer<UserProvider>(
-          //   builder: (ctx,discountCards,child) {
-          //     if (state is DiscountCardVerified) {
-          //       bloc.add(FetchDiscountCard());
-          //     }
-
-          //     if (state is DiscountCardDeleted) {
-          //       Scaffold.of(context).showSnackBar(SnackBar(
-          //         content: Text(
-          //           'Deleted',
-          //           // S.of(context).,
-          //           textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
-          //         ),
-          //         duration: Duration(seconds: 3),
-          //       ));
-          //     }
-
-          //     if (state is DiscountCardError) {
-          //       showMessageDialog(
-          //         context,
-          //         state.error,
-          //         title: S.of(context).error,
-          //         close: S.of(context).close,
-          //       );
-          //     }
-          //   },
-          // child:
-          Consumer<DiscountCardProvider>(
+      body: Consumer<DiscountCardProvider>(
         builder: (ctx, cards, child) {
-          // if (state is DiscountCardFetching ||
-          //     state is DiscountCardVerifying) {
-          //   return Center(
-          //     child: GLoading(),
-          //   );
-          // }
           if (_loadingCards) {
             return Center(
               child: GLoading(),
             );
           }
 
-          // if (state is DiscountCardEmpty || bloc.discountCard == null) {
-          //   return DiscountCardAddPage(bloc: bloc);
-          // }
           // Check weather it is needed or not
           if (cards.discountCard == null) {
             return DiscountCardGetPage();
@@ -134,7 +86,6 @@ class _DiscountCardPageState extends State<DiscountCardPage> {
           return _buildCard(cards);
         },
       ),
-      // ),
     );
   }
 
@@ -168,14 +119,10 @@ class _DiscountCardPageState extends State<DiscountCardPage> {
                       ),
                     ],
                   ),
-                  // width: MediaQuery.of(context).size.width - 40,
-                  // padding: EdgeInsets.all(17.0),
                   child: Stack(
                     children: <Widget>[
                       Positioned.fill(
-                        // child: Container(),
                         child: CachedNetworkImage(
-                          // imageUrl: cards.discountCard.background,
                           imageUrl: 'http://getir.safedevs.com/images/card.png',
                           fit: BoxFit.cover,
                         ),
@@ -274,7 +221,6 @@ class _DiscountCardPageState extends State<DiscountCardPage> {
                 itemCount: cards.orderHistory.length,
                 itemBuilder: (context, index) {
                   var point = cards.orderHistory[index];
-                  print(point);
                   return Container(
                     width: 100.0,
                     constraints: BoxConstraints(minHeight: 72),
@@ -324,7 +270,7 @@ class _DiscountCardPageState extends State<DiscountCardPage> {
                                   "${getCurrency(point.point, S.of(context).symbol)}",
                                   textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                                   style: TextStyle(
-                                    color: point.point > 0
+                                    color: point.type == "in"
                                         ? Colors.green
                                         : Colors.red,
                                     fontWeight: FontWeight.w600,
@@ -335,7 +281,6 @@ class _DiscountCardPageState extends State<DiscountCardPage> {
                             ),
                             Text(
                               "${getDateWithFormat(point.date, toFormat: "dd-MM-yyyy hh:mm")}",
-                              // 'data',
                               textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                               style: TextStyle(color: Colors.grey),
                             ),

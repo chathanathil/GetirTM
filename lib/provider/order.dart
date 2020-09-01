@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:getirtm/models/address.dart';
-import 'package:getirtm/models/checkout.dart';
+import 'package:getirtm/helpers/shared_preferences_helper.dart';
+import 'package:getirtm/models/user.dart';
 import './provider.dart';
 import '../models/order.dart';
+
+final Firestore _db = Firestore.instance;
 
 class OrderProvider with ChangeNotifier {
   List<Order> _orders = [];
@@ -11,35 +14,23 @@ class OrderProvider with ChangeNotifier {
   }
 
   /// Fetch current user orders
-  Future<List<Order>> fetchAllOrders() async {
-    // final response = await RootProvider.http.get('/orders');
-    print("fetch Orders");
+  Future fetchAllOrders() async {
+    User user = await SharedPreferencesHelper.getUserDetails();
+    final snapshot = await _db
+        .collection('users')
+        .document(user.id.toString())
+        .collection('orders')
+        .orderBy('created_at', descending: true)
+        .getDocuments();
+    snapshot.documents
+        .map((item) => _orders.add(Order.fromJson(item.data)))
+        .toList();
     notifyListeners();
-    // return (response.data['orders'] as List)
-    //     .map((item) => Order.fromJson(item))
-    //     .where((o) => o.status != "" && o.status != "pay")
-    //     .toList();
   }
 
   static Future<Order> getOrder(int id) async {
     final response = await RootProvider.http.get('/orders/$id');
 
     return Order.fromJson(response.data);
-  }
-
-  Future<Checkout> checkout(
-    int address,
-    String type, 
-    String description,
-    bool usePoint,
-    List<Map<String, dynamic>> products,
-  ) async{
-     // write http request here
-     if (type == 'online') {
-      // return Checkout.fromJson(response.data);
-      print("online");
-    }
-
-    return Checkout(type: 'cash');
   }
 }

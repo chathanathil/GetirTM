@@ -2,17 +2,14 @@ import 'dart:io' show Platform;
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:getirtm/models/appContent.dart';
-import 'package:getirtm/provider/discount_card.dart';
+import 'package:getirtm/provider/home.dart';
 import 'package:getirtm/provider/provider.dart';
-import '../widgets/profile/discount_card_page.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/utils.dart';
 import '../widgets/common/common.dart';
 import '../provider/auth.dart';
-import '../provider/user.dart';
 import '../root.dart';
 
 enum UserActions {
@@ -38,9 +35,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('ullinnull');
-    // print(Provider.of<AuthProvider>(context, listen: false).isAuthenticated);
-
     return Navigator(
       key: widget.navigatorKey,
       onGenerateRoute: (RouteSettings settings) {
@@ -64,8 +58,6 @@ class ProfilePageContent extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePageContent> {
-  static const routeName = "profile";
-
   // AuthBloc authBloc;
   double _sectionPadding = 8;
   UserActions status = UserActions.initial;
@@ -86,13 +78,14 @@ class _ProfilePageState extends State<ProfilePageContent> {
     _usernameController = TextEditingController();
     final _provider = Provider.of<AuthProvider>(context, listen: false);
     _provider.hasToken();
-    setState(() {
-      _contentLoading = true;
-    });
-    _provider.appContents().then((value) => setState(() {
-          _contentLoading = false;
-          // print(_provider.appContent);
-        }));
+    if (AuthProvider.appContent == null) {
+      setState(() {
+        _contentLoading = true;
+      });
+      _provider.appContents().then((value) => setState(() {
+            _contentLoading = false;
+          }));
+    }
   }
 
 // FOR EDITING NAME
@@ -116,17 +109,15 @@ class _ProfilePageState extends State<ProfilePageContent> {
     // setState(() {
     locale = locale;
     // });
+    await Provider.of<HomeProvider>(context, listen: false)
+        .setLocale(locale.languageCode);
     Root.setLocale(context, locale);
+    await RootProvider.init();
+
     Navigator.of(context).pop();
-    print('localing');
-    print(locale);
-    print(RootProvider.locale);
   }
 
   Widget buildMainSection(BuildContext context) {
-    print('ullil');
-    print(widget.auth);
-    print(widget.auth.isAuthenticated);
     List<Widget> children = [];
 
     if (widget.auth.isAuthenticated) {
@@ -196,7 +187,6 @@ class _ProfilePageState extends State<ProfilePageContent> {
                       color: AppColors.MAIN,
                     ),
                     onPressed: () {
-                      print('edit user');
                       setState(() {
                         status = UserActions.editing;
                       });
@@ -287,7 +277,7 @@ class _ProfilePageState extends State<ProfilePageContent> {
               color: AppColors.MAIN,
             ),
             title: Text(
-              S.of(context).profilePage_favorites,
+              S.of(context).profilePage_favourites,
               textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
             ),
             trailing: Icon(
@@ -314,7 +304,6 @@ class _ProfilePageState extends State<ProfilePageContent> {
             ),
             onTap: () {
               NavigatorUtils.goAddresses(context);
-              // print("address");
             },
           ),
           SizedBox(height: 6),
@@ -332,8 +321,7 @@ class _ProfilePageState extends State<ProfilePageContent> {
               color: AppColors.MAIN,
             ),
             onTap: () {
-              // NavigatorUtils.goOrders(context);
-              print('goto order page');
+              NavigatorUtils.goOrders(context);
             },
           ),
         ],
@@ -440,10 +428,6 @@ class _ProfilePageState extends State<ProfilePageContent> {
 
   @override
   Widget build(BuildContext context) {
-    print('content loading');
-    print(locale);
-    // print(widget.auth.appContent.myProfile[RootProvider.locale]);
-    print(RootProvider.locale);
     if (widget.auth.isAuthenticated) {
       _usernameController.text = widget.auth.user.name;
     }
@@ -508,7 +492,7 @@ class _ProfilePageState extends State<ProfilePageContent> {
                 Divider(height: 12),
                 ListTile(
                   title: Text(
-                    S.of(context).profilePage_lang,
+                    S.of(context).profilePage_language,
                     textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                   ),
                   trailing: ConditionalBuilder(
@@ -532,7 +516,7 @@ class _ProfilePageState extends State<ProfilePageContent> {
                 Divider(height: 12),
                 ListTile(
                   title: Text(
-                    S.of(context).profilePage_help,
+                    S.of(context).profilePage_faq,
                     textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                   ),
                   trailing: Icon(
@@ -564,8 +548,7 @@ class _ProfilePageState extends State<ProfilePageContent> {
                 Divider(height: 12),
                 ListTile(
                   title: Text(
-                    // S.of(context).profilePage_about,
-                    'Privacy',
+                    S.of(context).profilePage_privacy,
                     textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                   ),
                   trailing: Icon(
@@ -583,8 +566,7 @@ class _ProfilePageState extends State<ProfilePageContent> {
                 Divider(height: 12),
                 ListTile(
                   title: Text(
-                    // S.of(context).profilePage_about,
-                    'Terms',
+                    S.of(context).profilePage_terms,
                     textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                   ),
                   trailing: Icon(
@@ -602,8 +584,7 @@ class _ProfilePageState extends State<ProfilePageContent> {
                 Divider(height: 12),
                 ListTile(
                   title: Text(
-                    // S.of(context).profilePage_about,
-                    'Contact',
+                    S.of(context).profilePage_contact,
                     textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                   ),
                   trailing: Icon(
@@ -618,8 +599,7 @@ class _ProfilePageState extends State<ProfilePageContent> {
                 ),
                 ListTile(
                   title: Text(
-                    // S.of(context).profilePage_about,
-                    'Feedback',
+                    S.of(context).profilePage_feedback,
                     textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                   ),
                   trailing: Icon(

@@ -30,12 +30,4 @@ class User {
         balance: json['balance'] as num ?? null,
         discountPercentage: json['percentage'] as int ?? null);
   }
-
-  @override
-  List<Object> get props =>
-      [id, name, phone, email, address, balance, discountPercentage];
-
-  @override
-  String toString() =>
-      'User { id: $id, name: $name, address: $address, balance: $balance, discountPercentage: $discountPercentage}';
 }

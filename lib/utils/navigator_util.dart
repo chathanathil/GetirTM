@@ -57,25 +57,25 @@ class NavigatorUtils {
     );
   }
 
-  // static goOrders(BuildContext context) {
-  //   Navigator.push(
-  //     context,
-  //     new MaterialPageRoute(
-  //       settings: RouteSettings(name: OrderHistoryPage.routeName),
-  //       builder: (context) => new OrderHistoryPage(),
-  //     ),
-  //   );
-  // }
+  static goOrders(BuildContext context) {
+    Navigator.push(
+      context,
+      new MaterialPageRoute(
+        settings: RouteSettings(name: OrderHistoryPage.routeName),
+        builder: (context) => new OrderHistoryPage(),
+      ),
+    );
+  }
 
-  // static goOrderDetails(BuildContext context, Order order) {
-  //   Navigator.push(
-  //     context,
-  //     new MaterialPageRoute(
-  //       settings: RouteSettings(name: OrderDetailsPage.routeName),
-  //       builder: (context) => new OrderDetailsPage(order: order),
-  //     ),
-  //   );
-  // }
+  static goOrderDetails(BuildContext context, Order order) {
+    Navigator.push(
+      context,
+      new MaterialPageRoute(
+        settings: RouteSettings(name: OrderDetailsPage.routeName),
+        builder: (context) => new OrderDetailsPage(order: order),
+      ),
+    );
+  }
 
   static goLogin(BuildContext context) {
     Navigator.of(context, rootNavigator: true).push(
@@ -87,16 +87,6 @@ class NavigatorUtils {
     );
   }
 
-  // static goCartPage(BuildContext context) {
-  //   Navigator.push(
-  //     context,
-  //     new MaterialPageRoute(
-  //       settings: RouteSettings(name: CartPage.routeName),
-  //       builder: (context) => new CartPage(),
-  //     ),
-  //   );
-  // }
-
   static goCheckoutPage(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -105,16 +95,6 @@ class NavigatorUtils {
       ),
     );
   }
-
-  // static goPaymentPage(BuildContext context) {
-  //   Navigator.push(
-  //     context,
-  //     new MaterialPageRoute(
-  //       settings: RouteSettings(name: PaymentPage.routeName),
-  //       builder: (context) => new PaymentPage(),
-  //     ),
-  //   );
-  // }
 
   static goDiscountCardPage(BuildContext context) {
     Navigator.push(

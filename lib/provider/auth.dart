@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
@@ -8,6 +8,7 @@ import 'package:getirtm/helpers/shared_preferences_helper.dart';
 import 'package:getirtm/models/appContent.dart';
 import '../models/http_exception.dart';
 import '../models/user.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import './provider.dart';
 
@@ -26,25 +27,36 @@ class AuthProvider with ChangeNotifier {
     return _user;
   }
 
-  // AppContent get appContent {
-  //   return _appContent;
-  // }
-
   Future appContents() async {
     final snapshot =
         await _db.collection('app-content-text').document('contents').get();
-    print(AppContent.fromJson(snapshot.data));
     appContent = AppContent.fromJson(snapshot.data);
+  }
+
+  static final FirebaseMessaging _fcm = FirebaseMessaging();
+
+  static Future<String> storeFcmToken() async {
+    String token = await _storage.read(key: 'fcm_token');
+    if (token == null) {
+      String fcmToken = await _fcm.getToken();
+      if (fcmToken != null) {
+        await _storage.write(key: 'fcm_token', value: fcmToken);
+        return fcmToken;
+      }
+    }
+    return token;
   }
 
   /// Send verification code
   Future<void> login({@required String phone, @required String name}) async {
     try {
-      await RootProvider.http
-          .post('/auth/login', data: {'name': 'Maksat', 'phone': '64871221'});
-      print('auth');
+      final fcmToken = await storeFcmToken();
+      final response = await RootProvider.http.post('/auth/login', data: {
+        'fcm_token': fcmToken,
+        'name': name,
+        'phone': phone,
+      });
     } on DioError catch (error) {
-      print(error.response.data['message']);
       throw HttpException(error.response.data['message']);
     }
   }
@@ -56,21 +68,15 @@ class AuthProvider with ChangeNotifier {
   }) async {
     try {
       var response = await RootProvider.http.post('/auth/verify', data: {
-        'phone': 64871221,
-        'otp': 123456,
+        'phone': phone,
+        'otp': otp,
       });
-      print('auth');
-      print(response);
       await persistToken(response.data['access_token']);
       await SharedPreferencesHelper.setUserDetails(response.data['user']);
       await hasToken();
-      // _authenticated = true;
-      // _user = User.fromJson(response.data["user"]);
-
+      await RootProvider.init();
       notifyListeners();
-      // return response.data['access_token'];
     } on DioError catch (error) {
-      print(error.response.data['message']);
       throw HttpException(error.response.data['message']);
     }
   }
@@ -78,50 +84,38 @@ class AuthProvider with ChangeNotifier {
   /// Securely save token
   static Future<void> persistToken(String token) async {
     await _storage.write(key: 'token', value: token);
-    print('token stored');
   }
 
   // /// Check if has token
   Future hasToken() async {
-    print('chechT');
     String token = await _storage.read(key: 'token');
-
     _authenticated = token != null;
     _user = await SharedPreferencesHelper.getUserDetails();
-    print(_user);
     notifyListeners();
-    // return token != null;
   }
 
   Future updateUser(Map data) async {
     var response = await RootProvider.http.post('/users/update', data: data);
-    print(response);
-    print("use me");
     _user.name = data['name'];
     await SharedPreferencesHelper.setUserDetails(response.data['user']);
-    // notifyListeners();
-    // return response.data;
   }
 
   Future<void> logout() async {
     await _storage.delete(key: 'token');
-    // await RootProvider.setRequestHeaders();
     _authenticated = false;
-    print('logout');
-    print(_authenticated);
     String token = await _storage.read(key: 'token');
-    print(token);
     notifyListeners();
   }
 
   /// Delete token
   static Future<void> deleteToken() async {
     await _storage.delete(key: 'token');
-    // notifyListeners();
   }
 
   /// Get token
   static Future<String> getToken() async {
-    return await _storage.read(key: 'token');
+    String token = await _storage.read(key: 'token');
+
+    return token;
   }
 }

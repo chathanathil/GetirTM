@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../utils/dimens.dart';
 import '../../widgets/common/caching_future_builder.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-
 import '../common/loading_page.dart';
 import '../../provider/home.dart';
 

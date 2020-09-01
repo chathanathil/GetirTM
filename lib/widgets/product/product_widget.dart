@@ -1,5 +1,3 @@
-// TODO: Check commented things
-
 import 'dart:async';
 import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +17,9 @@ import '../common/ribbon.dart';
 
 class ProductWidget extends StatefulWidget {
   final Product product;
+  final int search;
 
-  const ProductWidget(this.product, {Key key}) : super(key: key);
+  const ProductWidget(this.product, {this.search, key}) : super(key: key);
 
   @override
   _ProductWidgetState createState() => _ProductWidgetState();
@@ -193,6 +192,7 @@ class _ProductWidgetState extends State<ProductWidget> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    double width = MediaQuery.of(context).size.width;
 
     final double itemWidth = size.width / 3 - leftRightPaddings;
 
@@ -242,112 +242,171 @@ class _ProductWidgetState extends State<ProductWidget> {
       child: Stack(
         overflow: Overflow.visible,
         children: <Widget>[
-          Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              ConditionalBuilder(
-                condition: widget.product.discountPercentage != null,
-                builder: (BuildContext context) {
-                  return Ribbon(
-                    nearLength: 30,
-                    farLength: 50,
-                    title: '${widget.product.discountPercentage.toInt()}%',
-                    titleStyle: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    color: Colors.redAccent,
-                    location: RibbonLocation.topStart,
-                    child: image,
-                  );
-                },
-                fallback: (BuildContext context) {
-                  return image;
-                },
-              ),
-              Expanded(
-                child: Container(
-                  width: itemWidth,
-                  padding: EdgeInsets.only(top: 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      ConditionalBuilder(
-                        condition: widget.product.discountPrice != null,
-                        builder: (context) {
-                          return Row(
-                            children: <Widget>[
-                              Text(
-                                getCurrency(
-                                  widget.product.discountPrice,
-                                  S.of(context).symbol,
-                                ),
-                                textScaleFactor: 0.8,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.MAIN,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                              Text(
-                                getCurrency(
-                                  widget.product.price,
-                                  S.of(context).symbol,
-                                ),
-                                textScaleFactor: Dimens.TEXT_SCALE_FACTOR_SMALL,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.grey,
-                                  decoration: TextDecoration.lineThrough,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                            ],
-                          );
-                        },
-                        fallback: (context) {
-                          return Text(
-                            getCurrency(
-                              widget.product.price,
-                              S.of(context).symbol,
-                            ),
-                            textScaleFactor: Dimens.TEXT_SCALE_FACTOR_SMALL,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.MAIN,
-                            ),
-                            textAlign: TextAlign.right,
-                          );
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 8.0,
-                        ),
-                        child: Text(
-                          widget.product.name,
-                          textScaleFactor: Dimens.TEXT_SCALE_FACTOR_SMALL,
-                          maxLines: 2,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+          widget.search == 1
+              ? Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        child:
+                            //  ProductWidget(item),
+                            ClipRRect(
+                          borderRadius:
+                              BorderRadius.circular(Dimens.BORDER_RADIUS),
+                          child: Image.network(
+                            widget.product.image,
+                            fit: BoxFit.cover,
                           ),
                         ),
+                        decoration: BoxDecoration(
+                          //border: Border.all(color: Colors.blue, width: 2.0),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(Dimens.BORDER_RADIUS),
+                          ),
+                          boxShadow: <BoxShadow>[
+                            new BoxShadow(
+                              color: AppColors.CATEGORY_SHADOW,
+                              blurRadius: 6.0,
+                            ),
+                          ],
+                        ),
+                        margin: EdgeInsets.all(5.0),
+                        height: width / 3,
+                        width: width / 3,
                       ),
-                    ],
-                  ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(3.0),
+                      width: width / 3,
+                      height: 40,
+                      child: Text(
+                        widget.product.name[locale] != null
+                            ? widget.product.name[locale]
+                            : "",
+                        maxLines: 2,
+                        textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.grey,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                )
+              : Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    ConditionalBuilder(
+                      condition: widget.product.discountPercentage != null,
+                      builder: (BuildContext context) {
+                        return Ribbon(
+                          nearLength: 30,
+                          farLength: 50,
+                          title:
+                              '${widget.product.discountPercentage.toInt()}%',
+                          titleStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          color: Colors.redAccent,
+                          location: RibbonLocation.topStart,
+                          child: image,
+                        );
+                      },
+                      fallback: (BuildContext context) {
+                        return image;
+                      },
+                    ),
+                    Expanded(
+                      child: Container(
+                        width: itemWidth,
+                        padding: EdgeInsets.only(top: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            ConditionalBuilder(
+                              condition: widget.product.discountPrice != null,
+                              builder: (context) {
+                                return Row(
+                                  children: <Widget>[
+                                    Text(
+                                      getCurrency(
+                                        widget.product.discountPrice,
+                                        S.of(context).symbol,
+                                      ),
+                                      textScaleFactor: 0.8,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.MAIN,
+                                      ),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                    Text(
+                                      getCurrency(
+                                        widget.product.price,
+                                        S.of(context).symbol,
+                                      ),
+                                      textScaleFactor:
+                                          Dimens.TEXT_SCALE_FACTOR_SMALL,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.grey,
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                      textAlign: TextAlign.right,
+                                    ),
+                                  ],
+                                );
+                              },
+                              fallback: (context) {
+                                return Text(
+                                  getCurrency(
+                                    widget.product.price,
+                                    S.of(context).symbol,
+                                  ),
+                                  textScaleFactor:
+                                      Dimens.TEXT_SCALE_FACTOR_SMALL,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.MAIN,
+                                  ),
+                                  textAlign: TextAlign.right,
+                                );
+                              },
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 8.0,
+                              ),
+                              child: Text(
+                                widget.product.name[locale] != null
+                                    ? widget.product.name[locale]
+                                    : "",
+                                textScaleFactor: Dimens.TEXT_SCALE_FACTOR_SMALL,
+                                maxLines: 2,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
           Consumer<ProductProvider>(
               builder: (ctx, pdt, child) => widget.product.isFavorited
                   ? Positioned(

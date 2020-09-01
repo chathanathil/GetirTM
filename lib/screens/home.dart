@@ -1,10 +1,13 @@
-// TODO:Some issue with loading, length was called on null
-
 import 'package:flutter/material.dart';
 import 'package:flutter_images_slider/flutter_images_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:getirtm/models/contact.dart';
+import 'package:getirtm/provider/auth.dart';
+import 'package:getirtm/provider/home.dart';
+import 'package:getirtm/provider/provider.dart';
 import 'package:provider/provider.dart';
 import 'package:conditional_builder/conditional_builder.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/category.dart';
 import '../models/slider.dart';
 import '../provider/product.dart';
@@ -22,11 +25,39 @@ import '../widgets/common/common.dart';
 
 import '../generated/i18n.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const routeName = "home";
   final Key navigatorKey;
 
   HomeScreen({Key key, this.navigatorKey}) : super(key: key);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Contact contact;
+  var _contentLoading = false;
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      _contentLoading = true;
+    });
+    HomeProvider.contact().then((value) => contact = value);
+    Provider.of<AuthProvider>(context, listen: false)
+        .appContents()
+        .then((value) => setState(() {
+              _contentLoading = false;
+            }));
+    HomeProvider.contact().then((value) => contact = value);
+    AuthProvider.storeFcmToken().then((value) async {
+      final response =
+          await RootProvider.http.post('/auth/fcm', data: {'fcm_token': value});
+    });
+  }
+
+  final String locale = RootProvider.locale;
 
   Widget _buildImageSlider(slides) {
     return ImagesSlider(
@@ -66,6 +97,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   final stream = ProductProvider();
+
   Widget _buildCategoryGrid(categories) {
     return SliverGrid(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -98,12 +130,51 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _makePhoneCall(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  _onCall() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Text(
+              // "Do you want to call customer service?",
+              AuthProvider.appContent.callCustomerService[RootProvider.locale],
+              textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
+            ),
+            actions: [
+              FlatButton(
+                child: Text(
+                  AuthProvider.appContent.no[RootProvider.locale],
+                  textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
+                ),
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop('dialog');
+                },
+              ),
+              FlatButton(
+                  child: Text(
+                    AuthProvider.appContent.yes[RootProvider.locale],
+                    textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
+                  ),
+                  onPressed: () => _makePhoneCall(
+                      contact.phone != null ? 'tel:${contact.phone}' : 'tel:'))
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final categories = Provider.of<List<Category>>(context);
     final slides = Provider.of<List<Slide>>(context);
-    print(categories);
-    print(slides);
+
     Scaffold scaffold = Scaffold(
         appBar: AppBar(
           title: Text(
@@ -111,13 +182,12 @@ class HomeScreen extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.w600),
             textScaleFactor: Dimens.TEXT_SCALE_FACTOR_TITLES,
           ),
-          actions: <Widget>[CartAction()],
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.phone), onPressed: _onCall),
+            CartAction()
+          ],
         ),
-        body:
-            // slides != null || categories != null
-            //     ? slides.length > 0 && categories.length > 0
-            //         ?
-            CustomScrollView(
+        body: CustomScrollView(
           slivers: <Widget>[
             ConditionalBuilder(
               condition: slides.length > 0,
@@ -129,7 +199,7 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             ConditionalBuilder(
-              condition: categories.length > 0,
+              condition: categories[0].name != null,
               builder: (BuildContext context) {
                 return SliverPadding(
                   padding: EdgeInsets.all(10.0),
@@ -144,19 +214,19 @@ class HomeScreen extends StatelessWidget {
             )
           ],
         )
-        //     : EmptyPage()
+        //     : EmptyPage()s
         // : LoadingPage()
         );
-    if (slides[0].id == 0 || categories[0].id == 0) {
+    if ((categories[0].id == 0 && slides[0].id == 0) || _contentLoading) {
       return LoadingPage();
     }
     return Navigator(
-      key: navigatorKey,
+      key: widget.navigatorKey,
       onGenerateRoute: (RouteSettings settings) {
         return MaterialPageRoute(
           settings: settings,
           builder: (BuildContext context) {
-            if (slides.length == 0 && categories.length == 0) {
+            if (categories.length == 0) {
               return EmptyPage();
             }
             return scaffold;
@@ -166,10 +236,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
-// @override
-// void dispose() {
-//   _refreshController.dispose();
-//   super.dispose();
-// }
-// }

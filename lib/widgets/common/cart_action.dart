@@ -25,8 +25,7 @@ class CartAction extends StatelessWidget {
                   textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                 ),
                 Text(
-                  'total cost write here',
-                  // getCurrency(kartBloc.kart.subtotalCost, "m."),
+                  getCurrency(cartData.subtotalCost, "m."),
                   textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                 )
               ],

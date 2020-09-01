@@ -102,7 +102,9 @@ class S implements WidgetsLocalizations {
   String get langSettingPage_title => "Dili saýlaň";
   String get langTm => "Türkmençe";
   String get login_to_order => "Dowam etmek üçin agza boluň";
-  String get no => "Ýok";
+  String get no => AuthProvider.appContent.no['tm'] != null
+      ? AuthProvider.appContent.no['tm']
+      : "No";
   String get notFound => "Tapylmady";
   String get orderDetailsPage_address => "Salgy:";
   String get orderDetailsPage_cardHolder => "Kart eýesi:";
@@ -130,7 +132,9 @@ class S implements WidgetsLocalizations {
   String get productDetailsPage_details => "Giňişleýin";
   String get productDetailsPage_title => "";
   String get productsPage_title => "Harytlar";
-  String get profilePage_about => "Biz barada";
+  String get profilePage_about => AuthProvider.appContent.about['tm'] != null
+      ? AuthProvider.appContent.about['tm']
+      : "About";
   String get profilePage_address =>
       AuthProvider.appContent.myAddresses['tm'] != null
           ? AuthProvider.appContent.myAddresses['tm']
@@ -138,15 +142,25 @@ class S implements WidgetsLocalizations {
   String get profilePage_favorites => "Halanlarym";
   String get profilePage_help => "Kömek";
   String get profilePage_lang => "Dil";
-  String get profilePage_login => "Içeri gir";
-  String get profilePage_logout => "Çykyş";
-  String get profilePage_orders => "Sargytlar";
+  String get profilePage_login => AuthProvider.appContent.login['tm'] != null
+      ? AuthProvider.appContent.login['tm']
+      : "Login";
+  String get profilePage_logout => AuthProvider.appContent.logout['tm'] != null
+      ? AuthProvider.appContent.logout['tm']
+      : "Logout";
+  String get profilePage_orders =>
+      AuthProvider.appContent.myOrders['tm'] != null
+          ? AuthProvider.appContent.myOrders['tm']
+          : "MyOrders";
   String get profilePage_title =>
       AuthProvider.appContent.myProfile['tm'] != null
           ? AuthProvider.appContent.myProfile['tm']
           : "Profilim";
   String get profilePage_unknown => "Näbelli";
-  String get profilePage_version => "Wersiýa";
+  String get profilePage_version =>
+      AuthProvider.appContent.version['tm'] != null
+          ? AuthProvider.appContent.version['tm']
+          : "Version";
   String get register => "Içeri gir";
   String get registerToContinue => "Dowam etmek üçin içeri giriň";
   String get repeat_order => "Sargydy gaýtalamak";
@@ -179,7 +193,39 @@ class S implements WidgetsLocalizations {
   String get verifyPage_title => "Ulanyjy logini";
   String get verifyPage_verify => "Tassyklamak";
   String get warning => "Duýduryş";
-  String get yes => "Hawa";
+  String get yes => AuthProvider.appContent.yes['tm'] != null
+      ? AuthProvider.appContent.yes['tm']
+      : "Yes";
+  String get profilePage_terms => AuthProvider.appContent.terms['tm'] != null
+      ? AuthProvider.appContent.terms['tm']
+      : "Terms";
+  String get profilePage_privacy =>
+      AuthProvider.appContent.privacy['tm'] != null
+          ? AuthProvider.appContent.privacy['tm']
+          : "Privacy";
+  String get profilePage_contact =>
+      AuthProvider.appContent.contact['tm'] != null
+          ? AuthProvider.appContent.contact['tm']
+          : "Contact";
+  String get profilePage_feedback =>
+      AuthProvider.appContent.feedback['tm'] != null
+          ? AuthProvider.appContent.feedback['tm']
+          : "Feedback";
+  String get profilePage_faq => AuthProvider.appContent.faq['tm'] != null
+      ? AuthProvider.appContent.faq['tm']
+      : "Faq";
+  String get profilePage_favourites =>
+      AuthProvider.appContent.favourites['tm'] != null
+          ? AuthProvider.appContent.favourites['tm']
+          : "Favourites";
+  String get profilePage_language =>
+      AuthProvider.appContent.language['tm'] != null
+          ? AuthProvider.appContent.language['tm']
+          : "Language";
+  String get call_customer_service =>
+      AuthProvider.appContent.callCustomerService['tm'] != null
+          ? AuthProvider.appContent.callCustomerService['tm']
+          : "Call customer service?";
   String verifyPage_resendCodeIn(String seconds) =>
       "Kody $seconds sekuntdan täzeden ugratmak";
 }
@@ -190,8 +236,9 @@ class $ru extends S {
   @override
   TextDirection get textDirection => TextDirection.ltr;
 
-  @override
-  String get profilePage_login => "Войти";
+  String get profilePage_login => AuthProvider.appContent.login['ru'] != null
+      ? AuthProvider.appContent.login['ru']
+      : "Войти";
   @override
   String get langRu => "Русский";
   @override
@@ -390,7 +437,10 @@ class $ru extends S {
   @override
   String get addressPage_title => "Адрес";
   @override
-  String get profilePage_version => "Версия";
+  String get profilePage_version =>
+      AuthProvider.appContent.version['ru'] != null
+          ? AuthProvider.appContent.version['ru']
+          : "Версия";
   @override
   String get aboutPage_title => "О Нас";
   @override
@@ -399,12 +449,17 @@ class $ru extends S {
   String get createAddressPage_editAddress => "Редактировать";
   @override
   String get createAddressPage_selectRegion => "Выберите район";
+
   @override
-  String get no => "Нет";
+  String get no => AuthProvider.appContent.no['ru'] != null
+      ? AuthProvider.appContent.no['ru']
+      : "No";
   @override
   String get checkoutPage_TaC => "Я ознакомился с Правилами";
   @override
-  String get profilePage_about => "О нас";
+  String get profilePage_about => AuthProvider.appContent.about['ru'] != null
+      ? AuthProvider.appContent.about['ru']
+      : "About";
   @override
   String get checkoutPage_cash => "Наличные";
   @override
@@ -455,8 +510,11 @@ class $ru extends S {
   String get verifyPage_codeInvalid => "Код недействителен";
   @override
   String get appName => "GetirTm";
+
   @override
-  String get yes => "Да";
+  String get yes => AuthProvider.appContent.yes['ru'] != null
+      ? AuthProvider.appContent.yes['ru']
+      : "Yes";
   @override
   String get addressPage_deleted => "Адрес удален";
   @override
@@ -477,7 +535,9 @@ class $ru extends S {
   @override
   String get notFound => "Не найдено";
   @override
-  String get profilePage_logout => "Выйти";
+  String get profilePage_logout => AuthProvider.appContent.logout['ru'] != null
+      ? AuthProvider.appContent.logout['ru']
+      : "Logout";
   @override
   String get enter_discount_card_birthday => "Дата рождения";
   @override
@@ -488,6 +548,44 @@ class $ru extends S {
   String get createAddressPage_address => "Адрес: Улица, дом, квартира";
   @override
   String get orderHistoryPage_empty => "У Вас нет никаких заказов";
+  @override
+  String get profilePage_contact =>
+      AuthProvider.appContent.contact['ru'] != null
+          ? AuthProvider.appContent.contact['ru']
+          : "Contact";
+  @override
+  String get profilePage_faq => AuthProvider.appContent.faq['ru'] != null
+      ? AuthProvider.appContent.faq['ru']
+      : "Faq";
+  @override
+  String get profilePage_favourites =>
+      AuthProvider.appContent.favourites['ru'] != null
+          ? AuthProvider.appContent.favourites['ru']
+          : "Favourites";
+  @override
+  String get profilePage_feedback =>
+      AuthProvider.appContent.feedback['ru'] != null
+          ? AuthProvider.appContent.feedback['ru']
+          : "Feedback";
+  @override
+  String get profilePage_language =>
+      AuthProvider.appContent.language['ru'] != null
+          ? AuthProvider.appContent.language['ru']
+          : "Language";
+  @override
+  String get profilePage_privacy =>
+      AuthProvider.appContent.privacy['ru'] != null
+          ? AuthProvider.appContent.privacy['ru']
+          : "Privacy";
+  @override
+  String get profilePage_terms => AuthProvider.appContent.terms['ru'] != null
+      ? AuthProvider.appContent.terms['ru']
+      : "Terms";
+  @override
+  String get call_customer_service =>
+      AuthProvider.appContent.callCustomerService['ru'] != null
+          ? AuthProvider.appContent.terms['ru']
+          : "Call customer service?";
   @override
   String get repeat_order_content =>
       "Товары в Вашей корзине будут удалены, и добавлены вышеуказанные товары. Хотите продолжить?";

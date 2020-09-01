@@ -1,5 +1,3 @@
-// TODO: filter pdts
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -14,6 +12,7 @@ import '../../utils/utils.dart';
 import '../../widgets/product/product_details_page.dart';
 import '../../widgets/product/product_widget.dart';
 import '../../provider/provider.dart';
+import 'package:getirtm/provider/provider.dart';
 
 class SectionWidget extends StatelessWidget {
   final List<SubCategory> subCategories;
@@ -42,7 +41,7 @@ class SectionWidget extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                   child: Text(
-                    category.name != null ? category.name : '',
+                    category.name[locale] != null ? category.name[locale] : '',
                     textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                     textAlign: TextAlign.left,
                     style: TextStyle(fontSize: 18, color: Colors.grey),
@@ -87,32 +86,10 @@ class SectionWidget extends StatelessWidget {
     );
   }
 
-  // _filterCategories(List<SubCategory> categories, List<Product> products) {
-  //   print(categories);
-  //   print(products);
-  //   int count = 0;
-  //   List<SubCategory> filteredSubCategories = [];
-  //   for (int i = 0; i < categories.length; i++) {
-  //     for (int j = 0; j < products.length; j++) {
-  //       if (categories[i].id == products[j].categoryId) {
-  //         count++;
-  //       }
-  //     }
-  //     if (count > 0) {
-  //       filteredSubCategories.add(categories[i]);
-  //       count = 0;
-  //     }
-  //     count = 0;
-  //   }
-  //   print(filteredSubCategories);
-  //   return filteredSubCategories;
-  // }
-
   @override
   Widget build(BuildContext context) {
     final products = Provider.of<List<Product>>(context);
     Size size = MediaQuery.of(context).size;
-    // print(products[0].image);
     double itemWidth =
         (size.width - Dimens.PRODUCT_MAIN_AXIS_SPACING * 2 - 17) / 3;
 
@@ -121,10 +98,7 @@ class SectionWidget extends StatelessWidget {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(48.0),
-        child:
-            //  subCategories[0].name != null
-            // ?
-            Container(
+        child: Container(
           decoration: BoxDecoration(
             boxShadow: <BoxShadow>[
               BoxShadow(
@@ -135,19 +109,14 @@ class SectionWidget extends StatelessWidget {
             ],
           ),
           child: SubcategoryTabs(
-            categories:
-                subCategories, ////////// """££££££££" give subcategories if it has pdts
+            categories: subCategories,
             onItemPressed: (index) {
-              print('index');
-              print(index);
-
               double offset = subCategories.getRange(0, index).fold(
                 0,
                 (prev, category) {
                   List<Product> _products = products
                       .where((pdt) => pdt.subcategoryId == category.id)
                       .toList();
-                  print(category.products);
                   int rows = (_products.length / 3).ceil();
                   return prev +=
                       rows * (itemHeight + Dimens.PRODUCT_MAIN_AXIS_SPACING);
@@ -166,7 +135,10 @@ class SectionWidget extends StatelessWidget {
       ),
       body: products != null
           ? products.length == 0
-              ? Text('empty')
+              ? EmptyPage(
+                  title: S.of(context).notFound,
+                  message: "Not founds",
+                )
               : _buildBody(itemWidth, itemHeight, products)
           : Align(
               alignment: Alignment.center, child: Center(child: GLoading())),
@@ -177,7 +149,6 @@ class SectionWidget extends StatelessWidget {
 class SubcategoryTabs extends StatefulWidget {
   final List<SubCategory> categories;
   final Function onItemPressed;
-  final String locale = RootProvider.locale;
 
   SubcategoryTabs({
     Key key,
@@ -192,6 +163,7 @@ class SubcategoryTabs extends StatefulWidget {
 class _SubcategoryTabsState extends State<SubcategoryTabs>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
+  final String locale = RootProvider.locale;
 
   @override
   void initState() {
@@ -225,7 +197,7 @@ class _SubcategoryTabsState extends State<SubcategoryTabs>
           ),
         ),
         tabs: widget.categories
-            .map<Widget>((category) => Tab(text: category.name))
+            .map<Widget>((category) => Tab(text: category.name[locale]))
             .toList(),
         onTap: widget.onItemPressed,
       ),

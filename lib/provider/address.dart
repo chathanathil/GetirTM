@@ -14,6 +14,7 @@ class AddressProvider with ChangeNotifier {
   List<dynamic> addresses = [];
   List<City> cities = [];
   List<AddressType> types = [];
+  String addressMsg = "";
 
   Future<List<AddressType>> fetchAddressTypes() async {
     final snapshot = await _db.collection('addressTypes').getDocuments();
@@ -31,6 +32,8 @@ class AddressProvider with ChangeNotifier {
     try {
       var response = await RootProvider.http.post('/addresses', data: body);
       addresses.insert(0, Address.fromJson(response.data['address']));
+      addressMsg =
+          response.data["message"] != null ? response.data["message"] : "";
       notifyListeners();
     } on DioError catch (error) {
       throw HttpException(error.response.data['message']);
@@ -43,6 +46,9 @@ class AddressProvider with ChangeNotifier {
       var response =
           await RootProvider.http.put('/addresses/${body['id']}', data: body);
       addresses[prodIndex] = Address.fromJson(response.data['address']);
+      addressMsg =
+          response.data["message"] != null ? response.data["message"] : "";
+
       notifyListeners();
     } on DioError catch (error) {
       throw HttpException(error.response.data['message']);

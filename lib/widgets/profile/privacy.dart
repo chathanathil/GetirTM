@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import '../../utils/dimens.dart';
 import '../../widgets/common/caching_future_builder.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-
 import '../common/loading_page.dart';
 import '../../provider/home.dart';
 
-class PrivacyPage extends StatelessWidget {
+class PrivacyPage extends StatefulWidget {
   final String path;
   final String title;
 
@@ -14,7 +13,19 @@ class PrivacyPage extends StatelessWidget {
 
   static const routeName = 'privacy';
 
+  @override
+  _PrivacyPageState createState() => _PrivacyPageState();
+}
+
+class _PrivacyPageState extends State<PrivacyPage> {
   final flutterWebviewPlugin = new FlutterWebviewPlugin();
+
+  @override
+  void initState() {
+    super.initState();
+
+    flutterWebviewPlugin.close();
+  }
 
   Future<int> getPageCount(Size size) {
     return Future.value(1);
@@ -35,12 +46,12 @@ class PrivacyPage extends StatelessWidget {
                   return WebviewScaffold(
                     appBar: AppBar(
                       title: Text(
-                        title,
+                        widget.title,
                         textScaleFactor: Dimens.TEXT_SCALE_FACTOR,
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
-                    url: snapshot.data,
+                    url: "http://getir.safedevs.com/privacy",
                     hidden: true,
                     initialChild: LoadingPage(),
                   );

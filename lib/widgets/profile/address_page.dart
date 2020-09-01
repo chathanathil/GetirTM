@@ -33,8 +33,6 @@ class _AddressesPageState extends State<AddressesPage> {
       });
       _provider.fetchAddresses().then((value) => setState(() {
             _addressLoading = false;
-            print(
-                Provider.of<AddressProvider>(context, listen: false).addresses);
           }));
     }
     super.initState();
